@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title or "User Dashboard - PocketSmart AI" }}</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="/" class="brand-link">
+        <i class="fa-solid fa-wallet" style="color: var(--primary-light);"></i>
+        <span>PocketSmart</span>
+        <span class="brand-badge">AI</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="/dashboard" class="active"><i class="fa-solid fa-gauge"></i> Dashboard</a></li>
+        <li><a href="/home-planner"><i class="fa-solid fa-couch"></i> Home</a></li>
+        <li><a href="/party-planner"><i class="fa-solid fa-champagne-glasses"></i> Party</a></li>
+        <li><a href="/jewelry-planner"><i class="fa-solid fa-gem"></i> Jewelry</a></li>
+        <li><a href="/history"><i class="fa-solid fa-clock-rotate-left"></i> History</a></li>
+      </ul>
+
+      <div class="nav-auth">
+        <span style="font-size: 0.9rem; font-weight: 600; color: #475569;">
+          <i class="fa-solid fa-user-circle"></i> {{ user.username }}
+        </span>
+        <a href="/logout" class="btn btn-secondary btn-sm"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <!-- Header banner -->
+    <div style="margin-bottom: 2.5rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h1 style="font-size: 2.2rem; font-weight: 800; color: #1e293b; letter-spacing: -0.03em;">
+          Welcome back, <span style="color: #2563eb;">{{ user.full_name or user.username }}</span>!
+        </h1>
+        <p style="color: var(--text-muted); font-size: 1.05rem; margin-top: 0.25rem;">
+          Track your personalized budget allocations, review past plans, and generate new recommendations.
+        </p>
+      </div>
+      <div>
+        <a href="/history" class="btn btn-outline btn-sm">
+          <i class="fa-solid fa-list-check"></i> View Full History
+        </a>
+      </div>
+    </div>
+
+    <!-- Quick Stats Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+      <div class="card" style="padding: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <span style="font-size: 0.85rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Total Plans</span>
+          <div style="width: 38px; height: 38px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center;">
+            <i class="fa-solid fa-folder-open"></i>
+          </div>
+        </div>
+        <div style="font-size: 2rem; font-weight: 800; color: #1e293b;">{{ total_plans }}</div>
+        <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">
+          {{ home_count }} Home &bull; {{ party_count }} Party &bull; {{ jewelry_count }} Jewelry
+        </div>
+      </div>
+
+      <div class="card" style="padding: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <span style="font-size: 0.85rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Total Budget Planned</span>
+          <div style="width: 38px; height: 38px; border-radius: 8px; background: #ecfdf5; color: #059669; display: flex; align-items: center; justify-content: center;">
+            <i class="fa-solid fa-indian-rupee-sign"></i>
+          </div>
+        </div>
+        <div style="font-size: 2rem; font-weight: 800; color: #1e293b;">₹{{ "{:,.2f}".format(total_budget_planned) }}</div>
+        <div style="font-size: 0.8rem; color: #059669; font-weight: 600; margin-top: 0.25rem;">
+          Optimized across Indian platforms
+        </div>
+      </div>
+
+      <div class="card" style="padding: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <span style="font-size: 0.85rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Total Surplus / Savings</span>
+          <div style="width: 38px; height: 38px; border-radius: 8px; background: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center;">
+            <i class="fa-solid fa-piggy-bank"></i>
+          </div>
+        </div>
+        <div style="font-size: 2rem; font-weight: 800; color: #059669;">₹{{ "{:,.2f}".format(total_remaining_budget) }}</div>
+        <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">
+          Unspent balance retained
+        </div>
+      </div>
+    </div>
+
+    <!-- Direct Launch Planner Cards -->
+    <h2 style="font-size: 1.5rem; font-weight: 800; color: #1e293b; margin-bottom: 1.25rem;">
+      <i class="fa-solid fa-wand-magic-sparkles" style="color: #2563eb;"></i> Launch an AI Planner
+    </h2>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.75rem; margin-bottom: 3.5rem;">
+      <!-- Home Interior Card -->
+      <div class="feature-card">
+        <div class="feature-icon-wrapper icon-blue">
+          <i class="fa-solid fa-couch"></i>
+        </div>
+        <h3 class="feature-title">Home Interior Planner</h3>
+        <p class="feature-desc">
+          Plan rooms (Living Room, Kitchen, Bedroom) and specify lights, ceiling fans, furniture, and dining tables with IKEA & Amazon.
+        </p>
+        <a href="/home-planner" class="btn btn-primary btn-block">
+          <span>Start Home Plan</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <!-- Party Budget Card -->
+      <div class="feature-card">
+        <div class="feature-icon-wrapper icon-amber">
+          <i class="fa-solid fa-champagne-glasses"></i>
+        </div>
+        <h3 class="feature-title">Party Budget Planner</h3>
+        <p class="feature-desc">
+          Distribute budget proportionally across catering, decoration, entertainment, and venues with Swiggy, Zomato, and OYO.
+        </p>
+        <a href="/party-planner" class="btn btn-primary btn-block">
+          <span>Start Party Plan</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <!-- Jewelry Budget Card -->
+      <div class="feature-card">
+        <div class="feature-icon-wrapper icon-pink">
+          <i class="fa-solid fa-gem"></i>
+        </div>
+        <h3 class="feature-title">Jewelry Budget Planner</h3>
+        <p class="feature-desc">
+          Receive style-matched jewelry suggestions with optional outfit photo analysis using Gemini multimodal vision.
+        </p>
+        <a href="/jewelry-planner" class="btn btn-primary btn-block">
+          <span>Start Jewelry Plan</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Recent Recommendations Grid -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+      <h2 style="font-size: 1.5rem; font-weight: 800; color: #1e293b;">
+        <i class="fa-solid fa-clock-rotate-left" style="color: #64748b;"></i> Recent Recommendations
+      </h2>
+      {% if recent_recs %}
+      <a href="/history" style="font-size: 0.9rem; font-weight: 600; color: #2563eb; text-decoration: none;">View all &rarr;</a>
+      {% endif %}
+    </div>
+
+    {% if not recent_recs %}
+    <div class="card" style="text-align: center; padding: 3rem 1.5rem;">
+      <div style="font-size: 3rem; color: #cbd5e1; margin-bottom: 1rem;">
+        <i class="fa-regular fa-clipboard"></i>
+      </div>
+      <h3 style="font-size: 1.25rem; font-weight: 700; color: #334155; margin-bottom: 0.5rem;">No recommendation plans yet</h3>
+      <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 480px; margin: 0 auto 1.5rem auto;">
+        You haven't generated any budget recommendations. Choose a planner above to create your first smart plan!
+      </p>
+      <a href="/home-planner" class="btn btn-primary btn-sm">Create First Plan</a>
+    </div>
+    {% else %}
+    <div class="history-grid">
+      {% for item in recent_recs %}
+      <div class="history-card">
+        <div class="history-card-header">
+          <span class="history-type-badge badge-{{ item.recommendation_type }}">
+            {% if item.recommendation_type == 'home' %}<i class="fa-solid fa-couch"></i> Home Interior
+            {% elif item.recommendation_type == 'party' %}<i class="fa-solid fa-champagne-glasses"></i> Party Plan
+            {% else %}<i class="fa-solid fa-gem"></i> Jewelry Plan
+            {% endif %}
+          </span>
+          <span class="history-time">{{ item.timestamp }}</span>
+        </div>
+
+        <div class="history-budget-row">
+          <div class="history-budget-block">
+            <span class="history-budget-label">Total Budget</span>
+            <span class="history-budget-val">₹{{ "{:,.2f}".format(item.input_data.get('total_budget', item.result.get('total_budget', 0))) }}</span>
+          </div>
+          <div class="history-budget-block" style="text-align: right;">
+            <span class="history-budget-label">Remaining</span>
+            <span class="history-budget-val history-remaining-val">₹{{ "{:,.2f}".format(item.result.get('remaining_budget', 0)) }}</span>
+          </div>
+        </div>
+
+        <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem;">
+          <strong>Inputs:</strong> {{ item.input_summary }}
+        </div>
+        <div class="history-summary-text">
+          <strong>Outcome:</strong> {{ item.result_summary }}
+        </div>
+
+        <button onclick="viewRecommendationDetails('{{ item.id }}')" class="btn btn-outline btn-block btn-sm" style="margin-top: auto;">
+          <i class="fa-solid fa-eye"></i> View Full Details
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </main>
+
+  <!-- Recommendation Details Modal -->
+  <div class="modal-overlay" id="detailsModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <div id="modalBody">
+        <div style="text-align: center; padding: 2rem;">
+          <div class="spinner" style="border-top-color: #2563eb;"></div>
+          <p style="margin-top: 1rem; color: #64748b;">Loading details...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-bottom" style="border: none; padding-top: 0;">
+      <div>&copy; 2025-2026 PocketSmart AI. All rights reserved.</div>
+      <div>Powered by Google Gemini 1.5 Flash Pro</div>
+    </div>
+  </footer>
+
+  <script>
+    async function viewRecommendationDetails(recId) {
+      const modal = document.getElementById('detailsModal');
+      const body = document.getElementById('modalBody');
+      modal.style.display = 'flex';
+      body.innerHTML = `
+        <div style="text-align: center; padding: 2rem;">
+          <div class="spinner" style="border-top-color: #2563eb; width: 32px; height: 32px;"></div>
+          <p style="margin-top: 1rem; color: #64748b;">Fetching recommendation details...</p>
+        </div>
+      `;
+
+      try {
+        const res = await fetch(`/recommendation-details/${recId}`);
+        if (!res.ok) throw new Error('Failed to fetch details');
+        const data = await res.json();
+        renderModalData(data);
+      } catch (err) {
+        body.innerHTML = `
+          <div class="alert alert-danger">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>Error loading details: ${err.message}</span>
+          </div>
+        `;
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('detailsModal').style.display = 'none';
+    }
+
+    window.onclick = function(e) {
+      const modal = document.getElementById('detailsModal');
+      if (e.target === modal) closeModal();
+    };
+
+    function renderModalData(data) {
+      const body = document.getElementById('modalBody');
+      const full = data.full_result || {};
+      const type = data.type;
+
+      let html = `
+        <div style="margin-bottom: 1.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span class="history-type-badge badge-${type}" style="font-size: 0.9rem;">
+              ${type.toUpperCase()} PLAN
+            </span>
+            <span style="font-size: 0.85rem; color: #64748b;">${data.timestamp}</span>
+          </div>
+          <h2 style="font-size: 1.5rem; font-weight: 800; color: #0f172a;">Budget Plan Overview</h2>
+          <div style="display: flex; gap: 2rem; margin-top: 0.75rem;">
+            <div><span style="color: #64748b; font-size: 0.8rem;">TOTAL BUDGET:</span> <strong style="font-size: 1.2rem; color: #1e3a8a;">₹${(full.total_budget || 0).toLocaleString()}</strong></div>
+            <div><span style="color: #64748b; font-size: 0.8rem;">REMAINING:</span> <strong style="font-size: 1.2rem; color: #059669;">₹${(full.remaining_budget || 0).toLocaleString()}</strong></div>
+          </div>
+        </div>
+      `;
+
+      // Outfit analysis if jewelry
+      if (full.outfit_analysis) {
+        html += `
+          <div class="outfit-analysis-card">
+            <div class="outfit-analysis-title"><i class="fa-solid fa-vest"></i> Outfit Analysis</div>
+            <div class="outfit-analysis-grid">
+              <div><strong>Colors:</strong> ${full.outfit_analysis.colors ? full.outfit_analysis.colors.map(c => `<span class="outfit-tag">${c}</span>`).join('') : 'N/A'}</div>
+              <div><strong>Style:</strong> ${full.outfit_analysis.style || 'N/A'}</div>
+              <div><strong>Formality:</strong> ${full.outfit_analysis.formality || 'N/A'}</div>
+            </div>
+          </div>
+        `;
+      }
+
+      // Calculation table if present
+      const calcTable = full.calculation_table || full.calculation_table_inr;
+      if (calcTable && calcTable.length > 0) {
+        html += `
+          <div class="table-card" style="margin-bottom: 1.5rem;">
+            <div class="table-header-title"><i class="fa-solid fa-table"></i> Cost Allocation Table</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Items</th>
+                  <th>Total Cost (INR)</th>
+                  <th>Budget Share</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${calcTable.map(r => `
+                  <tr>
+                    <td style="font-weight: 600; text-transform: capitalize;">${r.category}</td>
+                    <td>${r.items_count || 1}</td>
+                    <td>₹${(r.total_cost || 0).toLocaleString()}</td>
+                    <td><strong>${r.percentage_of_budget || 0}%</strong></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      // Items recommendations
+      if (full.budget_breakdown) {
+        full.budget_breakdown.forEach(cat => {
+          html += `
+            <div class="rec-category-block">
+              <div class="category-block-header">
+                <span class="category-block-name">${cat.category}</span>
+                <span class="category-block-allocation">₹${(cat.allocation || 0).toLocaleString()}</span>
+              </div>
+              <div class="items-grid">
+                ${(cat.items || []).map(item => `
+                  <div class="item-card">
+                    <div class="item-card-title">${item.name}</div>
+                    <div class="item-card-desc">${item.description}</div>
+                    <div class="item-card-meta">
+                      <span class="item-price">₹${(item.estimated_price || 0).toLocaleString()}</span>
+                      <span class="item-qty">Qty: ${item.quantity || 1}</span>
+                    </div>
+                    ${item.shopping_links ? `
+                      <div class="shop-links-section">
+                        <span class="shop-links-label">Search on:</span>
+                        <div class="shop-links-row">
+                          ${Object.entries(item.shopping_links).map(([plt, link]) => `
+                            <a href="${link}" target="_blank" rel="noopener" class="shop-btn">
+                              <i class="fa-solid fa-arrow-up-right-from-square"></i> ${plt.toUpperCase()}
+                            </a>
+                          `).join('')}
+                        </div>
+                      </div>
+                    ` : ''}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      // Jewelry items
+      if (full.jewelry_recommendations) {
+        html += `
+          <div style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: #1e3a8a; margin-bottom: 1rem;">
+              <i class="fa-solid fa-gem"></i> Curated Jewelry Pieces
+            </h3>
+            <div class="items-grid">
+              ${full.jewelry_recommendations.map(j => `
+                <div class="item-card">
+                  <div class="item-card-title">${j.item_type}</div>
+                  <div class="item-card-desc">${j.description}</div>
+                  <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.5rem;">
+                    <strong>Style:</strong> ${j.style}
+                  </div>
+                  <div class="item-card-meta">
+                    <span class="item-price">₹${(j.estimated_price || 0).toLocaleString()}</span>
+                  </div>
+                  ${j.shopping_links ? `
+                    <div class="shop-links-section">
+                      <span class="shop-links-label">Shop On:</span>
+                      <div class="shop-links-row">
+                        ${Object.entries(j.shopping_links).map(([plt, link]) => `
+                          <a href="${link}" target="_blank" rel="noopener" class="shop-btn">
+                            ${plt.toUpperCase()}
+                          </a>
+                        `).join('')}
+                      </div>
+                    </div>
+                  ` : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      // Styling tips
+      if (full.styling_tips && full.styling_tips.length > 0) {
+        html += `
+          <div class="styling-tips-card" style="margin-top: 1.5rem;">
+            <div class="styling-tips-title"><i class="fa-regular fa-lightbulb"></i> Styling Advice</div>
+            <ul class="styling-tips-list">
+              ${full.styling_tips.map(t => `<li>${t}</li>`).join('')}
+            </ul>
+          </div>
+        `;
+      }
+
+      // Suggestions
+      if (full.additional_suggestions && full.additional_suggestions.length > 0) {
+        html += `
+          <div class="styling-tips-card" style="margin-top: 1.5rem;">
+            <div class="styling-tips-title"><i class="fa-regular fa-lightbulb"></i> Planning Suggestions</div>
+            <ul class="styling-tips-list">
+              ${full.additional_suggestions.map(s => `<li>${s}</li>`).join('')}
+            </ul>
+          </div>
+        `;
+      }
+
+      body.innerHTML = html;
+    }
+  </script>
+</body>
+</html>

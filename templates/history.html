@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title or "Recommendation History - PocketSmart AI" }}</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <!-- Navbar matching PDF page 38 -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="/" class="brand-link">
+        <i class="fa-solid fa-wallet" style="color: var(--primary-light);"></i>
+        <span>PocketSmart</span>
+        <span class="brand-badge">AI</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="/dashboard"><i class="fa-solid fa-gauge"></i> Dashboard</a></li>
+        <li><a href="/home-planner"><i class="fa-solid fa-couch"></i> Home Planner</a></li>
+        <li><a href="/party-planner"><i class="fa-solid fa-champagne-glasses"></i> Party Planner</a></li>
+        <li><a href="/jewelry-planner"><i class="fa-solid fa-gem"></i> Jewelry Planner</a></li>
+        <li><a href="/history" class="active"><i class="fa-solid fa-clock-rotate-left"></i> History</a></li>
+      </ul>
+
+      <div class="nav-auth">
+        <span style="font-size: 0.9rem; font-weight: 600; color: #475569;">
+          <i class="fa-solid fa-user-circle"></i> {{ user.username }}
+        </span>
+        <a href="/logout" class="btn btn-secondary btn-sm"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <!-- Header Banner matching PDF page 38 -->
+    <div style="background: linear-gradient(135deg, #1e3a8a, #2563eb); border-radius: var(--radius-lg); padding: 2.75rem 2rem; color: white; text-align: center; margin-bottom: 3rem; box-shadow: var(--shadow-md);">
+      <h1 style="font-size: 2.2rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.5rem;">
+        Your Recommendation History
+      </h1>
+      <p style="font-size: 1.05rem; color: #bfdbfe; max-width: 600px; margin: 0 auto;">
+        View and manage all your previous budget plans and recommendations
+      </p>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+      <h2 style="font-size: 1.4rem; font-weight: 800; color: #1e293b;">
+        <i class="fa-solid fa-clock-rotate-left" style="color: #2563eb;"></i> Saved Recommendation Plans
+      </h2>
+      <span style="font-size: 0.9rem; color: #64748b; font-weight: 600;">
+        {{ history_items|length }} Total Saved Queries
+      </span>
+    </div>
+
+    {% if not history_items %}
+    <div class="card" style="text-align: center; padding: 4rem 2rem;">
+      <div style="font-size: 3.5rem; color: #cbd5e1; margin-bottom: 1rem;">
+        <i class="fa-regular fa-folder-open"></i>
+      </div>
+      <h3 style="font-size: 1.3rem; font-weight: 700; color: #334155; margin-bottom: 0.5rem;">
+        No Past Plans Recorded
+      </h3>
+      <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 480px; margin: 0 auto 1.5rem auto;">
+        You haven't generated any budget recommendations yet. Launch a planner from the navigation bar above to begin!
+      </p>
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="/home-planner" class="btn btn-primary btn-sm">Home Planner</a>
+        <a href="/party-planner" class="btn btn-primary btn-sm">Party Planner</a>
+        <a href="/jewelry-planner" class="btn btn-primary btn-sm">Jewelry Planner</a>
+      </div>
+    </div>
+    {% else %}
+    <div class="history-grid">
+      {% for item in history_items %}
+      <div class="history-card">
+        <div class="history-card-header">
+          <span class="history-type-badge badge-{{ item.recommendation_type }}">
+            {% if item.recommendation_type == 'home' %}<i class="fa-solid fa-couch"></i> Home Interior Budget
+            {% elif item.recommendation_type == 'party' %}<i class="fa-solid fa-champagne-glasses"></i> Party Planning Budget
+            {% else %}<i class="fa-solid fa-gem"></i> Jewelry Budget
+            {% endif %}
+          </span>
+          <span class="history-time">{{ item.timestamp }}</span>
+        </div>
+
+        <div class="history-budget-row">
+          <div class="history-budget-block">
+            <span class="history-budget-label">Total Budget</span>
+            <span class="history-budget-val">₹{{ "{:,.2f}".format(item.input_data.get('total_budget', item.result.get('total_budget', 0))) }}</span>
+          </div>
+          <div class="history-budget-block" style="text-align: right;">
+            <span class="history-budget-label">Remaining</span>
+            <span class="history-budget-val history-remaining-val">₹{{ "{:,.2f}".format(item.result.get('remaining_budget', 0)) }}</span>
+          </div>
+        </div>
+
+        <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem;">
+          <strong>Inputs:</strong> {{ item.input_summary }}
+        </div>
+        <div class="history-summary-text">
+          <strong>Outcome:</strong> {{ item.result_summary }}
+        </div>
+
+        <button onclick="viewRecommendationDetails('{{ item.id }}')" class="btn btn-primary btn-block btn-sm" style="margin-top: auto;">
+          <i class="fa-solid fa-eye"></i> View Full Details
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </main>
+
+  <!-- Details Modal -->
+  <div class="modal-overlay" id="detailsModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <div id="modalBody">
+        <div style="text-align: center; padding: 2rem;">
+          <div class="spinner" style="border-top-color: #2563eb;"></div>
+          <p style="margin-top: 1rem; color: #64748b;">Loading plan details...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-bottom" style="border: none; padding-top: 0;">
+      <div>&copy; 2025-2026 PocketSmart AI. All rights reserved.</div>
+      <div>Powered by Google Gemini 1.5 Flash Pro</div>
+    </div>
+  </footer>
+
+  <script>
+    async function viewRecommendationDetails(recId) {
+      const modal = document.getElementById('detailsModal');
+      const body = document.getElementById('modalBody');
+      modal.style.display = 'flex';
+      body.innerHTML = `
+        <div style="text-align: center; padding: 2rem;">
+          <div class="spinner" style="border-top-color: #2563eb; width: 32px; height: 32px;"></div>
+          <p style="margin-top: 1rem; color: #64748b;">Fetching recommendation details...</p>
+        </div>
+      `;
+
+      try {
+        const res = await fetch(`/recommendation-details/${recId}`);
+        if (!res.ok) throw new Error('Failed to fetch details');
+        const data = await res.json();
+        renderModalData(data);
+      } catch (err) {
+        body.innerHTML = `
+          <div class="alert alert-danger">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>Error loading details: ${err.message}</span>
+          </div>
+        `;
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('detailsModal').style.display = 'none';
+    }
+
+    window.onclick = function(e) {
+      const modal = document.getElementById('detailsModal');
+      if (e.target === modal) closeModal();
+    };
+
+    function renderModalData(data) {
+      const body = document.getElementById('modalBody');
+      const full = data.full_result || {};
+      const type = data.type;
+
+      let html = `
+        <div style="margin-bottom: 1.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span class="history-type-badge badge-${type}" style="font-size: 0.9rem;">
+              ${type.toUpperCase()} PLAN
+            </span>
+            <span style="font-size: 0.85rem; color: #64748b;">${data.timestamp}</span>
+          </div>
+          <h2 style="font-size: 1.5rem; font-weight: 800; color: #0f172a;">Plan Full Breakdown</h2>
+          <div style="display: flex; gap: 2rem; margin-top: 0.75rem;">
+            <div><span style="color: #64748b; font-size: 0.8rem;">TOTAL BUDGET:</span> <strong style="font-size: 1.2rem; color: #1e3a8a;">₹${(full.total_budget || 0).toLocaleString()}</strong></div>
+            <div><span style="color: #64748b; font-size: 0.8rem;">REMAINING:</span> <strong style="font-size: 1.2rem; color: #059669;">₹${(full.remaining_budget || 0).toLocaleString()}</strong></div>
+          </div>
+        </div>
+      `;
+
+      if (full.outfit_analysis) {
+        html += `
+          <div class="outfit-analysis-card">
+            <div class="outfit-analysis-title"><i class="fa-solid fa-vest"></i> Outfit Analysis</div>
+            <div class="outfit-analysis-grid">
+              <div><strong>Colors:</strong> ${full.outfit_analysis.colors ? full.outfit_analysis.colors.map(c => `<span class="outfit-tag">${c}</span>`).join('') : 'N/A'}</div>
+              <div><strong>Style:</strong> ${full.outfit_analysis.style || 'N/A'}</div>
+              <div><strong>Formality:</strong> ${full.outfit_analysis.formality || 'N/A'}</div>
+            </div>
+          </div>
+        `;
+      }
+
+      const calcTable = full.calculation_table || full.calculation_table_inr;
+      if (calcTable && calcTable.length > 0) {
+        html += `
+          <div class="table-card" style="margin-bottom: 1.5rem;">
+            <div class="table-header-title"><i class="fa-solid fa-table"></i> Cost Allocation Table</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Items</th>
+                  <th>Total Cost (INR)</th>
+                  <th>Budget Share</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${calcTable.map(r => `
+                  <tr>
+                    <td style="font-weight: 600; text-transform: capitalize;">${r.category}</td>
+                    <td>${r.items_count || 1}</td>
+                    <td>₹${(r.total_cost || 0).toLocaleString()}</td>
+                    <td><strong>${r.percentage_of_budget || 0}%</strong></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      if (full.budget_breakdown) {
+        full.budget_breakdown.forEach(cat => {
+          html += `
+            <div class="rec-category-block">
+              <div class="category-block-header">
+                <span class="category-block-name">${cat.category}</span>
+                <span class="category-block-allocation">₹${(cat.allocation || 0).toLocaleString()}</span>
+              </div>
+              <div class="items-grid">
+                ${(cat.items || []).map(item => `
+                  <div class="item-card">
+                    <div class="item-card-title">${item.name}</div>
+                    <div class="item-card-desc">${item.description}</div>
+                    <div class="item-card-meta">
+                      <span class="item-price">₹${(item.estimated_price || 0).toLocaleString()}</span>
+                      <span class="item-qty">Qty: ${item.quantity || 1}</span>
+                    </div>
+                    ${item.shopping_links ? `
+                      <div class="shop-links-section">
+                        <span class="shop-links-label">Search on:</span>
+                        <div class="shop-links-row">
+                          ${Object.entries(item.shopping_links).map(([plt, link]) => `
+                            <a href="${link}" target="_blank" rel="noopener" class="shop-btn">
+                              <i class="fa-solid fa-arrow-up-right-from-square"></i> ${plt.toUpperCase()}
+                            </a>
+                          `).join('')}
+                        </div>
+                      </div>
+                    ` : ''}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      if (full.jewelry_recommendations) {
+        html += `
+          <div style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: #1e3a8a; margin-bottom: 1rem;">
+              <i class="fa-solid fa-gem"></i> Curated Jewelry Pieces
+            </h3>
+            <div class="items-grid">
+              ${full.jewelry_recommendations.map(j => `
+                <div class="item-card">
+                  <div class="item-card-title">${j.item_type}</div>
+                  <div class="item-card-desc">${j.description}</div>
+                  <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.5rem;">
+                    <strong>Style:</strong> ${j.style}
+                  </div>
+                  <div class="item-card-meta">
+                    <span class="item-price">₹${(j.estimated_price || 0).toLocaleString()}</span>
+                  </div>
+                  ${j.shopping_links ? `
+                    <div class="shop-links-section">
+                      <span class="shop-links-label">Shop On:</span>
+                      <div class="shop-links-row">
+                        ${Object.entries(j.shopping_links).map(([plt, link]) => `
+                          <a href="${link}" target="_blank" rel="noopener" class="shop-btn">
+                            ${plt.toUpperCase()}
+                          </a>
+                        `).join('')}
+                      </div>
+                    </div>
+                  ` : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      if (full.styling_tips && full.styling_tips.length > 0) {
+        html += `
+          <div class="styling-tips-card" style="margin-top: 1.5rem;">
+            <div class="styling-tips-title"><i class="fa-regular fa-lightbulb"></i> Styling Advice</div>
+            <ul class="styling-tips-list">
+              ${full.styling_tips.map(t => `<li>${t}</li>`).join('')}
+            </ul>
+          </div>
+        `;
+      }
+
+      body.innerHTML = html;
+    }
+  </script>
+</body>
+</html>

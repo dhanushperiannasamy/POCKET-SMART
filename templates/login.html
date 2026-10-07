@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title or "Sign In - PocketSmart AI" }}</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="/" class="brand-link">
+        <i class="fa-solid fa-wallet" style="color: var(--primary-light);"></i>
+        <span>PocketSmart</span>
+        <span class="brand-badge">AI</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/"><i class="fa-solid fa-house"></i> Home</a></li>
+        <li><a href="/testimonials"><i class="fa-solid fa-comments"></i> Testimonials</a></li>
+      </ul>
+      <div class="nav-auth">
+        <a href="/register" class="btn btn-outline btn-sm">Create Account</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-logo">PocketSmart</div>
+      <div class="auth-subhead">AI-Powered Budget Planning</div>
+
+      <h1 class="auth-title">Welcome Back</h1>
+
+      {% if error %}
+      <div class="alert alert-danger">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span>{{ error }}</span>
+      </div>
+      {% endif %}
+
+      <form action="/login" method="POST" id="loginForm">
+        <div class="form-group">
+          <label class="form-label" for="username">Username</label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-user input-icon"></i>
+            <input type="text" id="username" name="username" class="form-control" placeholder="Enter your username" required autofocus>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-lock input-icon"></i>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
+          </div>
+        </div>
+
+        <div class="auth-links">
+          <span></span>
+          <a href="#" onclick="alert('Demo account: demouser / password123, or register a new account.'); return false;">Forgot Password?</a>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="loginBtn" style="padding: 0.85rem; font-size: 1.05rem;">
+          <span>Sign In</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+
+        <div class="auth-switch">
+          Don't have an account? <a href="/register">Create Account</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-container">
+      <div>
+        <div class="footer-brand">PocketSmart</div>
+        <p class="footer-desc">AI-powered budget planning tools to help you make smarter decisions everyday, everywhere.</p>
+      </div>
+      <div>
+        <div class="footer-heading">Company</div>
+        <ul class="footer-links">
+          <li><a href="/">About Us</a></li>
+          <li><a href="/testimonials">Reviews</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Product</div>
+        <ul class="footer-links">
+          <li><a href="/home-planner">Home Planner</a></li>
+          <li><a href="/party-planner">Party Planner</a></li>
+          <li><a href="/jewelry-planner">Jewelry Planner</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Resources</div>
+        <ul class="footer-links">
+          <li><a href="/dashboard">Dashboard</a></li>
+          <li><a href="/history">History</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Legal</div>
+        <ul class="footer-links">
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>&copy; 2025-2026 PocketSmart AI. All rights reserved.</div>
+      <div>Powered by Google Gemini 1.5 Flash Pro</div>
+    </div>
+  </footer>
+</body>
+</html>
