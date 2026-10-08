@@ -10,13 +10,16 @@
 Powered by **FastAPI** and **Google Gemini 1.5 Flash Pro**, PocketSmart AI optimizes user allocations across three dedicated real-world scenarios, generates itemized calculation tables in INR (₹), and integrates direct search links to leading Indian commerce platforms including **Amazon, Flipkart, IKEA, Pepperfry, Swiggy, Zomato, OYO, CaratLane, Tanishq, and BlueStone**.
 
 ---
-👥 Project Team Details
-Team Information	Details
-Project Title	PocketSmart AI - Your Smart Budget & Recommendation Assistant
-Team Leader	dhanush p
-Team Members	• rahul T
-• Gowtham
-• Bercian Ubalt Rajan
+
+👥 Team Details
+
+Our project was developed by a dedicated team of developers:
+• Team Leader: Dhanush P
+• Team Members:
+	• Rahul T
+	• Gowtham
+	• Bercian Ubalt Rajan
+
 ## 🌟 Key Features
 
 ### 1. Home Interior Budget Planner
